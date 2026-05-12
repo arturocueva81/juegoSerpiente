@@ -19,11 +19,20 @@ const TAMANIO_CELDA = 25;
 //   { x: 0, y: 10 },
 // ];
 
-const SERPIENTE = [ // Ejercicio Final
-  { x: (canvas.width / 2) / TAMANIO_CELDA, y: (canvas.height / 2) / TAMANIO_CELDA },
-  { x: (canvas.width / 2) / TAMANIO_CELDA, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
-  { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
-  { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
+// const SERPIENTE = [ // Ejercicio Final
+//   { x: (canvas.width / 2) / TAMANIO_CELDA, y: (canvas.height / 2) / TAMANIO_CELDA },
+//   { x: (canvas.width / 2) / TAMANIO_CELDA, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
+//   { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
+//   { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA - 1 },
+// ];
+
+const SERPIENTE = [
+  { x: (canvas.width / 2) / TAMANIO_CELDA,     y: (canvas.height / 2) / TAMANIO_CELDA },
+  { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA },
+  { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA },
+  { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
+  { x: (canvas.width / 2) / TAMANIO_CELDA - 3, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
+  { x: (canvas.width / 2) / TAMANIO_CELDA - 4, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
 ];
 
 
@@ -72,7 +81,7 @@ function dibujarTablero() {
   }
 }
 
-function pintarParte(lineaX, lineaY, colorRelleno="red") {
+function pintarParte(lineaX, lineaY, colorRelleno="blue") {
   let valorX = lineaX * TAMANIO_CELDA;
   let valorY = lineaY * TAMANIO_CELDA;
 
@@ -86,7 +95,7 @@ function pintarParte(lineaX, lineaY, colorRelleno="red") {
 function pintarSerpiente(){
   for(let i = 0; i < SERPIENTE.length; i++){
     let elemento = SERPIENTE[i];
-    const color = i === 0 ? "yellow" : "red";
+    const color = i === 0 ? "orange" : "dodgerblue";
     pintarParte(elemento.x,elemento.y, color);
   }
 }
