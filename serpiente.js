@@ -6,6 +6,17 @@ let intervaloSerpiente;
 let direccionActual = "derecha";
 let comida = { x: 0, y: 0 };
 
+<<<<<<< Updated upstream
+=======
+let velocidad = 300;
+
+let nivel =0;
+let puntajeParaSubir=1;
+
+let tiempoSegundos = 0;
+let intervaloTiempo = null;
+
+>>>>>>> Stashed changes
 const SERPIENTE = [
   { x: (canvas.width / 2) / TAMANIO_CELDA,     y: (canvas.height / 2) / TAMANIO_CELDA },
   { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA },
@@ -17,6 +28,7 @@ const SERPIENTE = [
 
 generarComida();
 dibujarTodo();
+mostrarPantallaInicial();
 
 function limpiarCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -62,7 +74,7 @@ function pintarParte(lineaX, lineaY, colorRelleno="blue") {
 function pintarSerpiente(){
   for(let i = 0; i < SERPIENTE.length; i++){
     let elemento = SERPIENTE[i];
-    let color = i === 0 ? "orange" : "dodgerblue";
+    let color = i === 0 ? "white" : "green";
     pintarParte(elemento.x, elemento.y, color);
   }
 }
@@ -102,9 +114,18 @@ function moverAbajo() {
   SERPIENTE.pop();
 }
 
+<<<<<<< Updated upstream
 
 function cambiarDireccion(direccion){
   direccionActual=direccion;
+=======
+function cambiarDireccion(direccion) {
+  if(direccion === "derecha" && direccionActual === "izquierda") return;
+  if(direccion === "izquierda" && direccionActual === "derecha") return;
+  if(direccion === "arriba" && direccionActual === "abajo") return;
+  if(direccion === "abajo" && direccionActual === "arriba") return;
+  direccionActual = direccion;
+>>>>>>> Stashed changes
 }
 
 function moverSerpiente(){
@@ -115,7 +136,13 @@ function moverSerpiente(){
 
   if (atrapaComida()) {
     let puntajeActual = parseInt(document.getElementById("puntaje").innerText);
-    document.getElementById("puntaje").innerText = puntajeActual + 1;
+    puntajeActual++;                                          
+    document.getElementById("puntaje").innerText = puntajeActual; 
+    sonarComer();
+
+    if (puntajeActual % puntajeParaSubir === 0) {  
+      subirNivel();
+    }
 
     let cola = SERPIENTE[SERPIENTE.length - 1];
     if (direccionActual == "derecha")   SERPIENTE.push({ x: cola.x - 1, y: cola.y });
@@ -128,24 +155,266 @@ function moverSerpiente(){
   dibujarTodo();
 }
 
+<<<<<<< Updated upstream
 function iniciarJuego(){
   intervaloSerpiente=setInterval(moverSerpiente, 500);
 }
 
 function pausarJuego(){
-  clearInterval(intervaloSerpiente);
+=======
+// ============================================================
+// CONTROL DEL JUEGO
+// ============================================================
+function iniciarJuego() {
+  if (!intervaloSerpiente) { //validacion de la variable velocidad
+    limpiarCanvas();
+    dibujarTodo();
+    reproducirMusica();
+    iniciarTiempo();
+    intervaloSerpiente = setInterval(moverSerpiente, velocidad);
+  }
 }
 
+function pausarJuego() {
+  detenerMusica();
+  detenerTiempo();
+>>>>>>> Stashed changes
+  clearInterval(intervaloSerpiente);
+  intervaloSerpiente = null;
+  document.getElementById("estado").innerText = "Pausado";
+  document.getElementById("mensaje").innerText = "Juego en pausa. Presiona Iniciar para continuar.";
+}
+
+<<<<<<< Updated upstream
+=======
+function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y ELEMENTOS
+  detenerMusica();
+  detenerTiempo();
+  clearInterval(intervaloSerpiente);
+  intervaloSerpiente = null;
+
+  SERPIENTE.length = 0;
+  SERPIENTE.push(
+    { x: (canvas.width / 2) / TAMANIO_CELDA,     y: (canvas.height / 2) / TAMANIO_CELDA },
+    { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA }
+  );
+
+  direccionActual = "derecha";
+  nivel=0;
+  velocidad=300;
+  MUSICAFONDO.playbackRate = 1;
+
+  document.getElementById("puntaje").innerText = "0";
+  document.getElementById("estado").innerText  = "Listo";
+  document.getElementById("mensaje").innerText = "Presiona iniciar para comenzar.";
+  document.getElementById("nivel").innerText = "0";
+  document.getElementById("tiempo").innerText = "00:00";
+
+  generarComida();
+  dibujarTodo();
+}
+
+// ============================================================
+// COMIDA
+// ============================================================
+>>>>>>> Stashed changes
 function generarComida() {
   comida.x = Math.floor(Math.random() * (canvas.width / TAMANIO_CELDA));
   comida.y = Math.floor(Math.random() * (canvas.height / TAMANIO_CELDA));
 }
 
 function pintarComida() {
-  pintarParte(comida.x, comida.y, "lime");
+  pintarParte(comida.x, comida.y, "red");
 }
 
 function atrapaComida() {
   let cabeza = SERPIENTE[0];
   return cabeza.x === comida.x && cabeza.y === comida.y;
+<<<<<<< Updated upstream
 }
+=======
+}
+
+//*************************************************************
+// ============================================================
+// GAME OVER
+// ============================================================
+
+function chocaConPared() {
+  const CABEZA = SERPIENTE[0];
+  const COLUMNAS = canvas.width / TAMANIO_CELDA;
+  const FILAS = canvas.height / TAMANIO_CELDA;
+  return (
+    CABEZA.x < 0 ||
+    CABEZA.x >= COLUMNAS ||
+    CABEZA.y < 0 ||
+    CABEZA.y >= FILAS
+  );
+}
+
+function gameOver() {
+  sonarGameOver();
+  detenerTiempo();
+  clearInterval(intervaloSerpiente);
+  intervaloSerpiente = null;
+  document.getElementById("estado").innerText  = "💥 Game Over";
+  document.getElementById("mensaje").innerText = "Chocaste con la pared. Presiona Reiniciar.";
+}
+
+// pantalla inicial
+
+function mostrarPantallaInicial(){
+// Fondo semitransparente sobre el canvas
+  ctx.fillStyle = "rgba(0, 0, 0, 0.78)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Título
+  ctx.fillStyle = "#22c55e";
+  ctx.font = "bold 36px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("🦖 Yoshi Snake", canvas.width / 2, 100);
+
+  // Línea separadora
+  ctx.strokeStyle = "#22c55e";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(60, 120);
+  ctx.lineTo(canvas.width - 60, 120);
+  ctx.stroke();
+
+  // Instrucciones
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "18px Arial";
+  ctx.fillText("🎯 Come las manzanas para crecer y sumar puntos", canvas.width / 2, 170);
+  ctx.fillText("💀 No choques con los bordes del tablero",      canvas.width / 2, 210);
+  ctx.fillText("🔄 No puedes retroceder sobre ti mismo",        canvas.width / 2, 250);
+
+  // Controles
+  ctx.fillStyle = "#facc15";
+  ctx.font = "bold 20px Arial";
+  ctx.fillText("Controles", canvas.width / 2, 310);
+
+  ctx.fillStyle = "#cbd5e1";
+  ctx.font = "18px Arial";
+  ctx.fillText("⬆️(W) ⬇️(S) ⬅️(A) ➡️(D),  usa el mouse o las teclas direccionales",  canvas.width / 2, 350);
+  ctx.fillText("▶️  Iniciar  —  ⏸️  Pausar",           canvas.width / 2, 390);
+  ctx.fillText("🔁  Reiniciar para nueva partida",      canvas.width / 2, 430);
+
+  // Llamada a la acción
+  ctx.fillStyle = "#22c55e";
+  ctx.font = "bold 22px Arial";
+  ctx.fillText("¡Presiona Iniciar para jugar!", canvas.width / 2, 510);
+}
+
+
+// SONIDOS
+
+const MUSICAFONDO    = document.getElementById("musicaFondo");
+const SONIDOCOMER    = document.getElementById("sonidoComer");
+const SONIDOGAMEOVER = document.getElementById("sonidoGameOver");
+
+function reproducirMusica() {
+  MUSICAFONDO.volume = 0.4;
+  MUSICAFONDO.currentTime = 0;
+  MUSICAFONDO.play();
+}
+
+function detenerMusica() {
+  MUSICAFONDO.pause();
+  MUSICAFONDO.currentTime = 0;
+}
+
+function sonarComer() {
+  SONIDOCOMER.volume = 0.2;
+  SONIDOCOMER.currentTime = 0;
+  SONIDOCOMER.play();
+}
+
+function sonarGameOver() {
+  detenerMusica();
+  SONIDOGAMEOVER.currentTime = 0;
+  SONIDOGAMEOVER.play();
+}
+
+
+// subir de nivel
+function subirNivel() {
+  nivel++;
+  velocidad = Math.max(30, velocidad - 30);
+
+  clearInterval(intervaloSerpiente);
+  intervaloSerpiente = setInterval(moverSerpiente, velocidad);
+
+  let nuevaVelocidad = Math.min(2.5, 1 + nivel * 0.15);
+  MUSICAFONDO.playbackRate = nuevaVelocidad;
+
+  document.getElementById("nivel").innerText = nivel;
+  document.getElementById("mensaje").innerText = "⚡ ¡Nivel " + nivel + "! Velocidad aumentada.";
+}
+
+
+//CONTROL DE TIEMPO
+function iniciarTiempo() {
+
+  if (intervaloTiempo) return; 
+  intervaloTiempo = setInterval(() => {
+    tiempoSegundos++;
+    let minutos = Math.floor(tiempoSegundos / 60);
+    let segundos = tiempoSegundos % 60;
+    let formato = (minutos < 10 ? "0" : "") + minutos + ":" +
+                  (segundos < 10 ? "0" : "") + segundos;
+    document.getElementById("tiempo").innerText = formato;
+  }, 1000);
+}
+
+function detenerTiempo() {
+  clearInterval(intervaloTiempo);
+  intervaloTiempo = null;
+}
+
+// ============================================================
+// CONTROLES DE TECLADO
+// ============================================================
+document.addEventListener("keydown", function(evento) {
+  evento.preventDefault(); 
+
+  let direccion = null;
+
+  switch (evento.key) {
+    // Flechas
+    case "ArrowUp":    direccion = "arriba";    break;
+    case "ArrowDown":  direccion = "abajo";     break;
+    case "ArrowLeft":  direccion = "izquierda"; break;
+    case "ArrowRight": direccion = "derecha";   break;
+    // WASD
+    case "w": case "W": direccion = "arriba";    break;
+    case "s": case "S": direccion = "abajo";     break;
+    case "a": case "A": direccion = "izquierda"; break;
+    case "d": case "D": direccion = "derecha";   break;
+    // Espacio
+    case " ":
+      if (intervaloSerpiente) pausarJuego();
+      else iniciarJuego();
+      return; 
+  }
+
+  if (direccion) {
+    cambiarDireccion(direccion);
+
+    // Efecto visual en el botón correspondiente
+    const emojiBoton = {
+      "arriba":    "⬆️",
+      "abajo":     "⬇️",
+      "izquierda": "⬅️",
+      "derecha":   "➡️",
+    };
+
+    document.querySelectorAll(".controles button").forEach(btn => {
+      if (btn.textContent.trim() === emojiBoton[direccion]) {
+        btn.classList.add("activo");
+        setTimeout(() => btn.classList.remove("activo"), 150);
+      }
+    });
+  }
+});
+>>>>>>> Stashed changes
