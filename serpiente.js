@@ -6,8 +6,6 @@ let intervaloSerpiente;
 let direccionActual = "derecha";
 let comida = { x: 0, y: 0 };
 
-<<<<<<< Updated upstream
-=======
 let velocidad = 300;
 
 let nivel =0;
@@ -16,7 +14,7 @@ let puntajeParaSubir=1;
 let tiempoSegundos = 0;
 let intervaloTiempo = null;
 
->>>>>>> Stashed changes
+
 const SERPIENTE = [
   { x: (canvas.width / 2) / TAMANIO_CELDA,     y: (canvas.height / 2) / TAMANIO_CELDA },
   { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA },
@@ -113,19 +111,17 @@ function moverAbajo() {
   SERPIENTE.unshift(nuevaCabeza);
   SERPIENTE.pop();
 }
-
-<<<<<<< Updated upstream
-
 function cambiarDireccion(direccion){
   direccionActual=direccion;
-=======
+}
+
 function cambiarDireccion(direccion) {
   if(direccion === "derecha" && direccionActual === "izquierda") return;
   if(direccion === "izquierda" && direccionActual === "derecha") return;
   if(direccion === "arriba" && direccionActual === "abajo") return;
   if(direccion === "abajo" && direccionActual === "arriba") return;
   direccionActual = direccion;
->>>>>>> Stashed changes
+
 }
 
 function moverSerpiente(){
@@ -155,13 +151,12 @@ function moverSerpiente(){
   dibujarTodo();
 }
 
-<<<<<<< Updated upstream
 function iniciarJuego(){
   intervaloSerpiente=setInterval(moverSerpiente, 500);
 }
 
 function pausarJuego(){
-=======
+
 // ============================================================
 // CONTROL DEL JUEGO
 // ============================================================
@@ -178,15 +173,13 @@ function iniciarJuego() {
 function pausarJuego() {
   detenerMusica();
   detenerTiempo();
->>>>>>> Stashed changes
+
   clearInterval(intervaloSerpiente);
   intervaloSerpiente = null;
   document.getElementById("estado").innerText = "Pausado";
   document.getElementById("mensaje").innerText = "Juego en pausa. Presiona Iniciar para continuar.";
 }
 
-<<<<<<< Updated upstream
-=======
 function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y ELEMENTOS
   detenerMusica();
   detenerTiempo();
@@ -217,7 +210,7 @@ function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y
 // ============================================================
 // COMIDA
 // ============================================================
->>>>>>> Stashed changes
+
 function generarComida() {
   comida.x = Math.floor(Math.random() * (canvas.width / TAMANIO_CELDA));
   comida.y = Math.floor(Math.random() * (canvas.height / TAMANIO_CELDA));
@@ -230,9 +223,9 @@ function pintarComida() {
 function atrapaComida() {
   let cabeza = SERPIENTE[0];
   return cabeza.x === comida.x && cabeza.y === comida.y;
-<<<<<<< Updated upstream
+
 }
-=======
+
 }
 
 //*************************************************************
@@ -417,4 +410,4 @@ document.addEventListener("keydown", function(evento) {
     });
   }
 });
->>>>>>> Stashed changes
+
