@@ -1,66 +1,72 @@
+// ============================================================
+// CONFIGURACIÓN INICIAL
+// ============================================================
 const canvas = document.getElementById("canvasJuego");
 const ctx = canvas.getContext("2d");
 const TAMANIO_CELDA = 25;
+
+const MUSICAFONDO    = document.getElementById("musicaFondo");
+const SONIDOCOMER    = document.getElementById("sonidoComer");
+const SONIDOGAMEOVER = document.getElementById("sonidoGameOver");
 
 let intervaloSerpiente;
 let direccionActual = "derecha";
 let comida = { x: 0, y: 0 };
 
 let velocidad = 300;
-
-let nivel =0;
-let puntajeParaSubir=1;
-
+let nivel = 0;
+let puntajeParaSubir = 1;
 let tiempoSegundos = 0;
 let intervaloTiempo = null;
-
 
 const SERPIENTE = [
   { x: (canvas.width / 2) / TAMANIO_CELDA,     y: (canvas.height / 2) / TAMANIO_CELDA },
   { x: (canvas.width / 2) / TAMANIO_CELDA - 1, y: (canvas.height / 2) / TAMANIO_CELDA },
   { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA },
-  //  { x: (canvas.width / 2) / TAMANIO_CELDA - 2, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
-  //{ x: (canvas.width / 2) / TAMANIO_CELDA - 3, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
-  //{ x: (canvas.width / 2) / TAMANIO_CELDA - 4, y: (canvas.height / 2) / TAMANIO_CELDA + 1 },
 ];
 
 generarComida();
 dibujarTodo();
 mostrarPantallaInicial();
 
+// ============================================================
+// DIBUJO DEL TABLERO
+// ============================================================
 function limpiarCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function dibujarTodo() {
-  limpiarCanvas();      
-  dibujarTablero(); 
-  pintarComida();   
+  limpiarCanvas();
+  dibujarTablero();
+  pintarComida();
   pintarSerpiente();
 }
 
 function dibujarTablero() {
-  ctx.strokeStyle = "green"; 
+  ctx.strokeStyle = "green";
 
   for (let x = 0; x <= canvas.width; x += TAMANIO_CELDA) {
-    ctx.beginPath();         
-    ctx.moveTo(x, 0);         
-    ctx.lineTo(x, canvas.height); 
-    ctx.stroke();             
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
+    ctx.stroke();
   }
 
   for (let y = 0; y <= canvas.height; y += TAMANIO_CELDA) {
     ctx.beginPath();
-    ctx.moveTo(0, y);   
+    ctx.moveTo(0, y);
     ctx.lineTo(canvas.width, y);
-    ctx.stroke();     
+    ctx.stroke();
   }
 }
 
-function pintarParte(lineaX, lineaY, colorRelleno="blue") {
-
-  let valorX = lineaX * TAMANIO_CELDA; 
-  let valorY = lineaY * TAMANIO_CELDA; 
+// ============================================================
+// DIBUJO DE LA SERPIENTE
+// ============================================================
+function pintarParte(lineaX, lineaY, colorRelleno = "blue") {
+  let valorX = lineaX * TAMANIO_CELDA;
+  let valorY = lineaY * TAMANIO_CELDA;
 
   ctx.fillStyle = colorRelleno;
   ctx.fillRect(valorX, valorY, TAMANIO_CELDA, TAMANIO_CELDA);
@@ -69,29 +75,27 @@ function pintarParte(lineaX, lineaY, colorRelleno="blue") {
   ctx.strokeRect(valorX, valorY, TAMANIO_CELDA, TAMANIO_CELDA);
 }
 
-function pintarSerpiente(){
-  for(let i = 0; i < SERPIENTE.length; i++){
+function pintarSerpiente() {
+  for (let i = 0; i < SERPIENTE.length; i++) {
     let elemento = SERPIENTE[i];
     let color = i === 0 ? "white" : "green";
     pintarParte(elemento.x, elemento.y, color);
   }
 }
 
-function moverDerecha(){
-    let cabezaActual = SERPIENTE[0];
-    let nuevaCabeza={
-      x:cabezaActual.x+1,
-      y:cabezaActual.y
-    };
-
-    SERPIENTE.unshift(nuevaCabeza);
-    SERPIENTE.pop();
+// ============================================================
+// MOVIMIENTO DE LA SERPIENTE
+// ============================================================
+function moverDerecha() {
+  let cabezaActual = SERPIENTE[0];
+  let nuevaCabeza = { x: cabezaActual.x + 1, y: cabezaActual.y };
+  SERPIENTE.unshift(nuevaCabeza);
+  SERPIENTE.pop();
 }
 
 function moverIzquierda() {
   let cabezaActual = SERPIENTE[0];
   let nuevaCabeza = { x: cabezaActual.x - 1, y: cabezaActual.y };
-  
   SERPIENTE.unshift(nuevaCabeza);
   SERPIENTE.pop();
 }
@@ -99,7 +103,6 @@ function moverIzquierda() {
 function moverArriba() {
   let cabezaActual = SERPIENTE[0];
   let nuevaCabeza = { x: cabezaActual.x, y: cabezaActual.y - 1 };
-
   SERPIENTE.unshift(nuevaCabeza);
   SERPIENTE.pop();
 }
@@ -107,36 +110,36 @@ function moverArriba() {
 function moverAbajo() {
   let cabezaActual = SERPIENTE[0];
   let nuevaCabeza = { x: cabezaActual.x, y: cabezaActual.y + 1 };
-
   SERPIENTE.unshift(nuevaCabeza);
   SERPIENTE.pop();
 }
-function cambiarDireccion(direccion){
-  direccionActual=direccion;
-}
 
 function cambiarDireccion(direccion) {
-  if(direccion === "derecha" && direccionActual === "izquierda") return;
-  if(direccion === "izquierda" && direccionActual === "derecha") return;
-  if(direccion === "arriba" && direccionActual === "abajo") return;
-  if(direccion === "abajo" && direccionActual === "arriba") return;
+  if (direccion === "derecha"   && direccionActual === "izquierda") return;
+  if (direccion === "izquierda" && direccionActual === "derecha")   return;
+  if (direccion === "arriba"    && direccionActual === "abajo")     return;
+  if (direccion === "abajo"     && direccionActual === "arriba")    return;
   direccionActual = direccion;
-
 }
 
-function moverSerpiente(){
+function moverSerpiente() {
   if (direccionActual == "derecha")   moverDerecha();
   if (direccionActual == "izquierda") moverIzquierda();
   if (direccionActual == "arriba")    moverArriba();
   if (direccionActual == "abajo")     moverAbajo();
 
+  if (chocaConPared()) {
+    gameOver();
+    return;
+  }
+
   if (atrapaComida()) {
     let puntajeActual = parseInt(document.getElementById("puntaje").innerText);
-    puntajeActual++;                                          
-    document.getElementById("puntaje").innerText = puntajeActual; 
+    puntajeActual++;
+    document.getElementById("puntaje").innerText = puntajeActual;
     sonarComer();
 
-    if (puntajeActual % puntajeParaSubir === 0) {  
+    if (puntajeActual % puntajeParaSubir === 0) {
       subirNivel();
     }
 
@@ -148,20 +151,15 @@ function moverSerpiente(){
 
     generarComida();
   }
+
   dibujarTodo();
 }
-
-function iniciarJuego(){
-  intervaloSerpiente=setInterval(moverSerpiente, 500);
-}
-
-function pausarJuego(){
 
 // ============================================================
 // CONTROL DEL JUEGO
 // ============================================================
 function iniciarJuego() {
-  if (!intervaloSerpiente) { //validacion de la variable velocidad
+  if (!intervaloSerpiente) {
     limpiarCanvas();
     dibujarTodo();
     reproducirMusica();
@@ -173,14 +171,13 @@ function iniciarJuego() {
 function pausarJuego() {
   detenerMusica();
   detenerTiempo();
-
   clearInterval(intervaloSerpiente);
   intervaloSerpiente = null;
-  document.getElementById("estado").innerText = "Pausado";
+  document.getElementById("estado").innerText  = "Pausado";
   document.getElementById("mensaje").innerText = "Juego en pausa. Presiona Iniciar para continuar.";
 }
 
-function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y ELEMENTOS
+function reiniciarJuego() {
   detenerMusica();
   detenerTiempo();
   clearInterval(intervaloSerpiente);
@@ -193,15 +190,16 @@ function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y
   );
 
   direccionActual = "derecha";
-  nivel=0;
-  velocidad=300;
+  nivel = 0;
+  velocidad = 300;
   MUSICAFONDO.playbackRate = 1;
+  tiempoSegundos = 0;
 
   document.getElementById("puntaje").innerText = "0";
+  document.getElementById("nivel").innerText   = "0";
   document.getElementById("estado").innerText  = "Listo";
   document.getElementById("mensaje").innerText = "Presiona iniciar para comenzar.";
-  document.getElementById("nivel").innerText = "0";
-  document.getElementById("tiempo").innerText = "00:00";
+  document.getElementById("tiempo").innerText  = "00:00";
 
   generarComida();
   dibujarTodo();
@@ -210,7 +208,6 @@ function reiniciarJuego() { // REINICIO DEL JUEGO RESET DE TODAS LAS VARIABLES Y
 // ============================================================
 // COMIDA
 // ============================================================
-
 function generarComida() {
   comida.x = Math.floor(Math.random() * (canvas.width / TAMANIO_CELDA));
   comida.y = Math.floor(Math.random() * (canvas.height / TAMANIO_CELDA));
@@ -223,16 +220,11 @@ function pintarComida() {
 function atrapaComida() {
   let cabeza = SERPIENTE[0];
   return cabeza.x === comida.x && cabeza.y === comida.y;
-
 }
 
-}
-
-//*************************************************************
 // ============================================================
 // GAME OVER
 // ============================================================
-
 function chocaConPared() {
   const CABEZA = SERPIENTE[0];
   const COLUMNAS = canvas.width / TAMANIO_CELDA;
@@ -254,20 +246,18 @@ function gameOver() {
   document.getElementById("mensaje").innerText = "Chocaste con la pared. Presiona Reiniciar.";
 }
 
-// pantalla inicial
-
-function mostrarPantallaInicial(){
-// Fondo semitransparente sobre el canvas
+// ============================================================
+// PANTALLA INICIAL
+// ============================================================
+function mostrarPantallaInicial() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.78)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Título
   ctx.fillStyle = "#22c55e";
   ctx.font = "bold 36px Arial";
   ctx.textAlign = "center";
   ctx.fillText("🦖 Yoshi Snake", canvas.width / 2, 100);
 
-  // Línea separadora
   ctx.strokeStyle = "#22c55e";
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -275,36 +265,31 @@ function mostrarPantallaInicial(){
   ctx.lineTo(canvas.width - 60, 120);
   ctx.stroke();
 
-  // Instrucciones
   ctx.fillStyle = "#ffffff";
   ctx.font = "18px Arial";
   ctx.fillText("🎯 Come las manzanas para crecer y sumar puntos", canvas.width / 2, 170);
-  ctx.fillText("💀 No choques con los bordes del tablero",      canvas.width / 2, 210);
-  ctx.fillText("🔄 No puedes retroceder sobre ti mismo",        canvas.width / 2, 250);
+  ctx.fillText("💀 No choques con los bordes del tablero",         canvas.width / 2, 210);
+  ctx.fillText("🔄 No puedes retroceder sobre ti mismo",           canvas.width / 2, 250);
 
-  // Controles
   ctx.fillStyle = "#facc15";
   ctx.font = "bold 20px Arial";
   ctx.fillText("Controles", canvas.width / 2, 310);
 
   ctx.fillStyle = "#cbd5e1";
   ctx.font = "18px Arial";
-  ctx.fillText("⬆️(W) ⬇️(S) ⬅️(A) ➡️(D),  usa el mouse o las teclas direccionales",  canvas.width / 2, 350);
-  ctx.fillText("▶️  Iniciar  —  ⏸️  Pausar",           canvas.width / 2, 390);
-  ctx.fillText("🔁  Reiniciar para nueva partida",      canvas.width / 2, 430);
+  ctx.fillText("⬆️(W) ⬇️(S) ⬅️(A) ➡️(D), usa el mouse o las teclas direccionales", canvas.width / 2, 350);
+  ctx.fillText("▶️  Iniciar  —  ⏸️  Pausar",          canvas.width / 2, 390);
+  ctx.fillText("🔁  Reiniciar para nueva partida",     canvas.width / 2, 430);
 
-  // Llamada a la acción
   ctx.fillStyle = "#22c55e";
   ctx.font = "bold 22px Arial";
   ctx.fillText("¡Presiona Iniciar para jugar!", canvas.width / 2, 510);
 }
 
-
+// ============================================================
 // SONIDOS
+// ============================================================
 
-const MUSICAFONDO    = document.getElementById("musicaFondo");
-const SONIDOCOMER    = document.getElementById("sonidoComer");
-const SONIDOGAMEOVER = document.getElementById("sonidoGameOver");
 
 function reproducirMusica() {
   MUSICAFONDO.volume = 0.4;
@@ -329,8 +314,9 @@ function sonarGameOver() {
   SONIDOGAMEOVER.play();
 }
 
-
-// subir de nivel
+// ============================================================
+// SUBIR DE NIVEL
+// ============================================================
 function subirNivel() {
   nivel++;
   velocidad = Math.max(30, velocidad - 30);
@@ -341,15 +327,15 @@ function subirNivel() {
   let nuevaVelocidad = Math.min(2.5, 1 + nivel * 0.15);
   MUSICAFONDO.playbackRate = nuevaVelocidad;
 
-  document.getElementById("nivel").innerText = nivel;
+  document.getElementById("nivel").innerText   = nivel;
   document.getElementById("mensaje").innerText = "⚡ ¡Nivel " + nivel + "! Velocidad aumentada.";
 }
 
-
-//CONTROL DE TIEMPO
+// ============================================================
+// CONTROL DE TIEMPO
+// ============================================================
 function iniciarTiempo() {
-
-  if (intervaloTiempo) return; 
+  if (intervaloTiempo) return;
   intervaloTiempo = setInterval(() => {
     tiempoSegundos++;
     let minutos = Math.floor(tiempoSegundos / 60);
@@ -369,32 +355,28 @@ function detenerTiempo() {
 // CONTROLES DE TECLADO
 // ============================================================
 document.addEventListener("keydown", function(evento) {
-  evento.preventDefault(); 
+  evento.preventDefault();
 
   let direccion = null;
 
   switch (evento.key) {
-    // Flechas
     case "ArrowUp":    direccion = "arriba";    break;
     case "ArrowDown":  direccion = "abajo";     break;
     case "ArrowLeft":  direccion = "izquierda"; break;
     case "ArrowRight": direccion = "derecha";   break;
-    // WASD
     case "w": case "W": direccion = "arriba";    break;
     case "s": case "S": direccion = "abajo";     break;
     case "a": case "A": direccion = "izquierda"; break;
     case "d": case "D": direccion = "derecha";   break;
-    // Espacio
     case " ":
       if (intervaloSerpiente) pausarJuego();
       else iniciarJuego();
-      return; 
+      return;
   }
 
   if (direccion) {
     cambiarDireccion(direccion);
 
-    // Efecto visual en el botón correspondiente
     const emojiBoton = {
       "arriba":    "⬆️",
       "abajo":     "⬇️",
@@ -410,4 +392,3 @@ document.addEventListener("keydown", function(evento) {
     });
   }
 });
-
